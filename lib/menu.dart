@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ShopItem {
   final String name;
   final IconData icon;
-  final Color color;  // Bonus Poin Tugas 6 Individu PBP (Add Different Color for button)
+  final Color color;  // Bonus Poin Tugas 7 Individu PBP (Add Different Color for button)
 
   ShopItem(this.name, this.icon, this.color); // Tambahkan Color pada constructor
 }
