@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:rumah_kaos/menu.dart';
+import 'package:rumah_kaos/screens/menu.dart';
 
 void main() {
   runApp(const MyApp());
