@@ -572,4 +572,303 @@ ListTile(
 
 **BONUS** -> Saya mengerjakan bonus untuk Tugas 8 berupa Membuat sebuah halaman baru, yaitu halaman daftar item yang sudah dibuat dengan isi halamannya adalah setiap data produk yang sudah pernah dibuat.
 
+<br/>
+
+Tugas 9: Integrasi Layanan Web Django dengan Aplikasi Flutter
+
+<br />
+
+<details>
+<summary> 1. Apakah bisa kita melakukan pengambilan data JSON tanpa membuat model terlebih dahulu? Jika iya, apakah hal tersebut lebih baik daripada membuat model sebelum melakukan pengambilan data JSON?
+</summary>
+
+<br/>
+
+### Pengambilan Data JSON Tanpa Model di Flutter
+***Ya, kita bisa mengambil data JSON tanpa membuat model terlebih dahulu di Flutter.*** 
+
+Flutter dan Dart menyediakan cara untuk melakukan ini dengan menggunakan `Map` dan dynamic typing. Contohnya, kita bisa menggunakan `jsonDecode` untuk mengubah string JSON menjadi `Map<String, dynamic>` atau `List<dynamic>` di Dart, yang memungkinkan kita untuk mengakses data tanpa mendefinisikan model kelas terlebih dahulu.
+
+**Contoh Penggunaan:**
+
+```dart
+var data = jsonDecode(responseBody) as Map<String, dynamic>;
+print(data['key']); // Mengakses nilai menggunakan key
+```
+
+**Perbandingan dengan Pendekatan Model:**
+
+**1. Fleksibilitas vs Struktur** 
+
+Menggunakan pendekatan tanpa model memberikan fleksibilitas lebih dalam mengakses data JSON, terutama bila struktur data sering berubah atau tidak terdefinisi dengan jelas. Namun, pendekatan ini kurang terstruktur dan bisa lebih rentan terhadap kesalahan pada runtime, seperti typo dalam nama key.
+
+**2. Keselamatan Tipe** 
+
+Pendekatan model (strong typing) memberikan keuntungan dalam bentuk keselamatan tipe. Model yang didefinisikan memastikan bahwa data yang diakses sesuai dengan struktur yang kita harapkan. Ini mengurangi kemungkinan kesalahan saat runtime dan memudahkan debugging.
+
+**3. Manajemen Data yang Lebih Baik** 
+
+Model membantu dalam manajemen data yang lebih baik. Jika aplikasi berkembang menjadi lebih kompleks, memiliki model yang jelas membantu dalam memelihara kode, meningkatkan keterbacaan, dan memudahkan kolaborasi dalam tim.
+
+**Kesimpulan** 
+
+Menggunakan model atau tidak bergantung pada kasus penggunaan spesifik. Untuk proyek yang lebih besar dan kompleks, atau ketika bekerja dalam tim, mendefinisikan model sering kali lebih disukai karena alasan keselamatan tipe dan manajemen kode. Untuk skenario yang lebih sederhana atau dengan data yang sering berubah, mengakses data JSON langsung tanpa model bisa menjadi pilihan yang efisien.
+
+</details>
+
+<br />
+
+<details>
+<summary> 2. Jelaskan fungsi dari CookieRequest dan jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
+</summary>
+
+<br/>
+
+### Fungsi `CookieRequest` dalam Aplikasi Flutter
+
+**Apa itu `CookieRequest`?**
+`CookieRequest` dalam konteks pengembangan aplikasi, khususnya di Flutter, sering merujuk pada mekanisme yang mengatur pengiriman dan penerimaan cookie saat melakukan request HTTP. Cookies adalah data kecil yang disimpan di perangkat klien dan dikirimkan kembali ke server pada setiap request. `CookieRequest` bertugas untuk memastikan bahwa cookie ini diatur dan dikirimkan dengan benar.
+
+**Fungsi Utama `CookieRequest`:**
+1. **Pengelolaan Sesi Pengguna:** `CookieRequest` membantu dalam mengelola sesi pengguna. Cookie sering digunakan untuk menyimpan token autentikasi atau informasi sesi lainnya yang memungkinkan aplikasi mengenali pengguna yang sudah login.
+2. **Pemeliharaan State antara Request:** Cookie membantu menjaga keadaan (state) antara berbagai request HTTP. Hal ini penting untuk fitur seperti keranjang belanja di e-commerce atau preferensi pengguna.
+3. **Keamanan:** Dalam banyak kasus, `CookieRequest` juga mengelola aspek keamanan, seperti memastikan bahwa cookie sensitif hanya dikirim melalui koneksi HTTPS.
+
+**Mengapa `CookieRequest` Perlu Dibagikan ke Semua Komponen?**
+1. **Konsistensi State:** Memastikan bahwa setiap komponen aplikasi memiliki akses ke state yang sama dan terkini, yang sangat penting untuk fungsionalitas dan user experience.
+2. **Efisiensi dan DRY (Don't Repeat Yourself):** Dengan membagikan instance `CookieRequest`, kita dapat menghindari duplikasi kode untuk pengelolaan cookie di berbagai bagian aplikasi.
+3. **Pengelolaan Sumber Daya:** Membagi satu instance memastikan penggunaan sumber daya yang efisien, seperti memori dan koneksi jaringan, karena tidak perlu membuat banyak instance untuk tujuan yang sama.
+4. **Sinkronisasi Akses Data:** Memungkinkan semua komponen untuk secara sinkron mengakses dan memodifikasi cookie atau data sesi, yang penting untuk integritas data dan pengalaman pengguna.
+
+### Kesimpulan
+Dalam aplikasi Flutter, `CookieRequest` memainkan peran penting dalam pengelolaan sesi dan keamanan pengguna, serta dalam menjaga konsistensi dan efisiensi pengelolaan state aplikasi. Memiliki satu instance `CookieRequest` yang dibagikan di seluruh aplikasi memastikan bahwa semua komponen bekerja dengan state yang sama, mengurangi duplikasi kode, dan meningkatkan efisiensi penggunaan sumber daya.
+
+</details>
+
+<br />
+
+<details>
+<summary> 3.  Jelaskan mekanisme pengambilan data dari JSON hingga dapat ditampilkan pada Flutter.
+</summary>
+
+<br/>
+
+Mekanisme pengambilan data dari JSON hingga dapat ditampilkan pada aplikasi Flutter melibatkan beberapa langkah utama. Ini termasuk mengirim request HTTP ke server, menerima response dalam format JSON, menguraikan data JSON tersebut, dan akhirnya menampilkan data tersebut dalam UI Flutter. Berikut adalah penjelasan rinci dari setiap langkah:
+
+### 1. Mengirim Request HTTP
+Pertama, aplikasi Flutter mengirim request HTTP ke server atau endpoint API yang menyediakan data JSON. Ini biasanya dilakukan menggunakan paket `http` yang tersedia di Flutter.
+
+Contoh kode untuk mengirim request:
+```dart
+var url = Uri.parse('https://example.com/data');
+var response = await http.get(url);
+```
+
+### 2. Menerima Response JSON
+Setelah request terkirim, aplikasi akan menerima response dari server. Jika request berhasil, response ini akan berisi data dalam format JSON.
+
+### 3. Menguraikan (Parsing) JSON
+Langkah selanjutnya adalah menguraikan response JSON tersebut menjadi struktur data yang bisa digunakan oleh Flutter. Ada dua cara umum untuk melakukan ini:
+
+   - **Menggunakan Dynamic Typing:** Menguraikan JSON menjadi `Map<String, dynamic>` atau `List<dynamic>` menggunakan `jsonDecode` dari `dart:convert`. Metode ini tidak memerlukan model kelas terlebih dahulu.
+   
+     Contoh:
+     ```dart
+     var jsonData = jsonDecode(response.body);
+     ```
+
+   - **Menggunakan Model Kelas:** Membuat model kelas untuk merepresentasikan data JSON dan menggunakan `jsonDecode` untuk menguraikan JSON ke dalam instance dari model tersebut. Ini memberikan keuntungan dari type safety dan mudah untuk dielola.
+
+     Contoh model:
+     ```dart
+     class DataModel {
+       final String id;
+       final String name;
+       // Konstruktor dan metode lainnya
+     }
+     ```
+
+     Contoh penguraian:
+     ```dart
+     var dataModel = DataModel.fromJson(jsonDecode(response.body));
+     ```
+
+### 4. Menampilkan Data pada UI
+Setelah data JSON berhasil diuraikan, langkah terakhir adalah menampilkannya dalam UI Flutter. Ini bisa dilakukan dengan menggunakan berbagai widget Flutter, seperti `Text`, `ListView`, `Card`, dll.
+
+Contoh:
+```dart
+ListView.builder(
+  itemCount: data.length,
+  itemBuilder: (context, index) {
+    return ListTile(
+      title: Text(data[index].name),
+      // Widget lainnya
+    );
+  },
+)
+```
+
+### Kesimpulan
+Proses pengambilan data dari JSON hingga ditampilkan pada Flutter melibatkan beberapa langkah penting, mulai dari mengirim request, menguraikan JSON, dan akhirnya menampilkan data dalam UI. Dengan menggunakan paket `http` untuk request dan `dart:convert` untuk penguraian JSON, Flutter menyediakan cara yang efisien dan fleksibel untuk menangani data JSON.
+
+</details>
+
+<br />
+
+<details>
+<summary> 4.  Jelaskan mekanisme autentikasi dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+</summary>
+
+<br/>
+
+Mekanisme autentikasi dari input data akun pada Flutter hingga proses autentikasi oleh Django dan tampilnya menu pada Flutter melibatkan beberapa langkah penting yang saling terintegrasi. Berikut adalah langkah-langkah tersebut:
+
+### 1. Input Data Akun pada Flutter
+Pertama, pengguna memasukkan data akun (biasanya username dan password) melalui antarmuka pengguna (UI) Flutter. Ini biasanya dilakukan menggunakan `TextFormField` atau widget input serupa.
+
+### 2. Mengirim Data ke Server Django
+Setelah pengguna menekan tombol login, aplikasi Flutter akan mengirimkan data tersebut ke server Django. Ini biasanya dilakukan dengan membuat request HTTP POST menggunakan paket seperti `http` di Flutter.
+
+Contoh kode untuk mengirim data:
+```dart
+var url = Uri.parse('http://yourdjangoapp.com/api/login/');
+var response = await http.post(
+  url,
+  body: {'username': 'user', 'password': 'pass'}
+);
+```
+
+### 3. Proses Autentikasi di Django
+Di sisi server Django, data yang diterima akan diproses. Django akan memeriksa apakah kombinasi username dan password cocok dengan yang ada di database.
+
+- Jika valid, Django akan menghasilkan token (misalnya menggunakan Django Rest Framework Token Authentication) dan mengirimkannya kembali sebagai response.
+- Jika tidak valid, Django akan mengirimkan response error.
+
+### 4. Menerima Response di Flutter
+Aplikasi Flutter kemudian akan menerima response dari Django.
+
+- Jika autentikasi berhasil (token diterima), aplikasi menyimpan token tersebut (misalnya di `SharedPreferences` untuk penggunaan selanjutnya).
+- Jika gagal, aplikasi dapat menampilkan pesan kesalahan.
+
+### 5. Menampilkan Menu di Flutter
+Setelah autentikasi berhasil, aplikasi Flutter kemudian dapat menavigasikan pengguna ke halaman utama atau menu utama aplikasi. Ini biasanya dilakukan dengan menggunakan Navigator untuk mengubah halaman.
+
+```dart
+if (authSuccess) {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(builder: (context) => MainMenu()),
+  );
+}
+```
+
+### 6. Penggunaan Token untuk Request Berikutnya
+Token yang disimpan digunakan untuk autentikasi pada request-request berikutnya ke server Django. Header `Authorization` dengan token biasanya ditambahkan pada setiap request yang memerlukan autentikasi.
+
+```dart
+var response = await http.get(
+  protectedUrl,
+  headers: {'Authorization': 'Token $yourToken'},
+);
+```
+
+### Kesimpulan
+Proses autentikasi antara aplikasi Flutter dan server Django melibatkan pertukaran data antara klien dan server, validasi kredensial oleh Django, dan penggunaan token untuk sesi yang terautentikasi. Flutter bertanggung jawab untuk mengumpulkan data pengguna dan menampilkan UI sesuai dengan status autentikasi, sementara Django menangani verifikasi kredensial dan mengeluarkan token.
+
+</details>
+
+<br />
+
+<details>
+<summary> 5. Sebutkan seluruh widget yang kamu pakai pada tugas ini dan jelaskan fungsinya masing-masing.
+</summary>
+
+<br/>
+
+| Widget       | Fungsi                                                                                   |
+|--------------|------------------------------------------------------------------------------------------|
+| `MaterialApp` | Titik awal aplikasi yang menggunakan Material Design, mengatur tema dan navigasi.       |
+| `Scaffold`    | Menyediakan struktur dasar layout Material, termasuk app bar, body, dan lainnya.         |
+| `AppBar`      | Menampilkan bar aplikasi di bagian atas layar, biasanya berisi judul dan aksi.           |
+| `TextFormField` | Widget input teks yang memungkinkan pengguna memasukkan data, seperti username dan password. |
+| `ListView`    | Widget scrollable yang menampilkan daftar item dalam bentuk linear.                       |
+| `Text`        | Menampilkan string teks sederhana pada UI.                                              |
+| `Image`       | Menampilkan gambar dari berbagai sumber, seperti jaringan atau aset lokal.              |
+| `Navigator`   | Mengatur rute halaman di aplikasi, seperti navigasi ke halaman baru.                    |
+| `FutureBuilder` | Membangun widget berdasarkan hasil terakhir dari interaksi Future, seperti request HTTP. |
+| `Card`        | Widget Material dengan sudut melengkung dan bayangan, sering digunakan untuk menampilkan konten secara terorganisir. |
+| `Padding`     | Menambahkan padding di sekeliling widget anaknya.                                      |
+| `Column`/`Row` | Menata widget anaknya secara vertikal (`Column`) atau horizontal (`Row`).              |
+| `Icon`        | Menampilkan ikon dari set Material Icons.                                              |
+| `IconButton`  | Tombol dengan area tekan yang menampilkan ikon, sering digunakan di AppBar.             |
+| `CircularProgressIndicator` | Menampilkan indikator loading berputar.                               |
+| `SharedPreferences` | Bukan widget, tapi digunakan untuk menyimpan data secara lokal di perangkat.      |
+
+</details>
+
+<br />
+
+<details>
+<summary> 6. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! (bukan hanya sekadar mengikuti tutorial)
+</summary>
+
+<br/>
+
+Untuk mengimplementasikan checklist yang meliputi pembuatan antarmuka pengguna (UI) untuk autentikasi menggunakan Flutter dan integrasi dengan backend Django, Anda bisa mengikuti langkah-langkah berikut. Langkah-langkah ini lebih berfokus pada proses pengembangan yang berdasarkan pemahaman konsep:
+
+### 1. Persiapan dan Perencanaan
+- **Tentukan Fitur:** Tentukan fitur-fitur yang Anda ingin implementasikan, seperti form login, tampilan detail produk, dan navigasi.
+- **Rancang UI:** Buat rancangan UI kasar dengan alat seperti Figma atau sketsa tangan untuk mendapatkan gambaran visual.
+- **Setup Proyek:** Buat proyek Flutter baru dan siapkan lingkungan pengembangan Django.
+
+### 2. Membuat UI Login di Flutter
+- **Struktur Dasar:** Gunakan `MaterialApp` dan `Scaffold` untuk membuat struktur dasar halaman.
+- **Form Input:** Gunakan `TextFormField` untuk input username dan password.
+- **Tombol Login:** Tambahkan `ElevatedButton` untuk mengirim data form.
+- **Validasi Input:** Implementasikan validasi sederhana untuk input form menggunakan `Form` dan `GlobalKey<FormState>`.
+
+### 3. Implementasi Autentikasi di Django
+- **Model Pengguna:** Pastikan model pengguna Django siap digunakan.
+- **Endpoint API:** Buat endpoint API untuk autentikasi menggunakan Django Rest Framework.
+- **Autentikasi Token:** Gunakan sistem token (misalnya TokenAuthentication di DRF) untuk mengelola sesi pengguna.
+
+### 4. Integrasi API dengan Flutter
+- **HTTP Request:** Gunakan paket `http` di Flutter untuk mengirimkan data login ke endpoint Django.
+- **Pengelolaan State:** Gunakan `setState` atau state management lain (seperti Provider) untuk mengelola state autentikasi.
+- **Pengelolaan Respons:** Tangani response dari server (token atau pesan error) dan simpan token di `SharedPreferences` jika login berhasil.
+
+### 5. Navigasi dan Tampilan Menu
+- **Halaman Menu:** Buat halaman menu baru di Flutter.
+- **Navigasi:** Setelah login berhasil, gunakan `Navigator` untuk beralih ke halaman menu.
+- **Menampilkan Data:** Jika perlu, buat request ke Django untuk mengambil data yang ditampilkan di menu.
+
+### 6. Implementasi Fitur Tambahan
+- **Daftar Produk:** Implementasikan `ListView.builder` untuk menampilkan produk.
+- **Halaman Detail Produk:** Buat halaman baru untuk detail produk. Gunakan `Navigator` untuk transisi ke halaman ini ketika produk dipilih.
+- **Autentikasi di Request Lain:** Sertakan token autentikasi di header untuk request lain yang memerlukan autentikasi.
+
+### 7. Pengujian dan Debugging
+- **Uji Fungsionalitas:** Lakukan pengujian manual untuk memastikan semua fitur berfungsi seperti yang diharapkan.
+- **Debugging:** Gunakan tools debugging di Flutter dan Django untuk menyelesaikan masalah yang muncul.
+
+### 8. Refinement dan Refactoring
+- **Perbaiki UI:** Sesuaikan UI berdasarkan feedback atau kebutuhan pengguna.
+- **Refactoring Kode:** Refactor kode untuk meningkatkan efisiensi dan keterbacaan.
+
+### 9. Dokumentasi dan Penyelesaian
+- **Dokumentasi:** Tulis dokumentasi yang diperlukan untuk proyek.
+- **Penyelesaian:** Lakukan penyesuaian akhir dan persiapkan aplikasi untuk deployment atau penggunaan lebih lanjut.
+
+
+</details>
+
+
+
+
+
+
+
+
+
 
