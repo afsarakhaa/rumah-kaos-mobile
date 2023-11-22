@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rumah_kaos/items.dart';
 import 'package:rumah_kaos/screens/daftar_item.dart';
+import 'package:rumah_kaos/screens/list_product.dart';
 import 'package:rumah_kaos/screens/menu.dart';
 import 'package:rumah_kaos/screens/shoplist_form.dart';
 // TODO: Impor halaman ShopFormPage jika sudah dibuat
@@ -73,18 +74,31 @@ class LeftDrawer extends StatelessWidget {
             },
           ),
 
+          // ListTile(
+          //   leading: const Icon(Icons.list),
+          //   title: const Text('Lihat Item'),
+          //   onTap: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(
+          //         builder: (context) => ProductListPage(items: globalShopItems),
+          //       ),
+          //     );
+          //   },
+          // ),
+          
           ListTile(
-            leading: const Icon(Icons.list),
-            title: const Text('Lihat Item'),
+            leading: const Icon(Icons.shopping_basket),
+            title: const Text('Daftar Produk'),
             onTap: () {
-              Navigator.push(
+                // Route menu ke halaman produk
+                Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => ProductListPage(items: globalShopItems),
-                ),
-              );
+                MaterialPageRoute(builder: (context) => const ProductPage()),
+                );
             },
-          ),
+        ),
+
         ],
       ),
     );
